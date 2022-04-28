@@ -32,6 +32,11 @@ function love.load()
         vsync = true
     })
 
+    sounds = {
+    	['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static')
+    	['score'] = love.audio.newSource('sounds/score.wav', 'static')
+    	['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static')
+    }
 
 	player1Score = 0
 	player2Score = 0
@@ -53,16 +58,24 @@ function love.draw()
 
 	love.graphics.setFont(smallFont)
 
+	-- print scores
+	love.graphics.setFont(scoreFont) -- change default font
+	love.graphics.print(tostring(player1Score), VIRTUAL_WIDTH/2 - 50, VIRTUAL_HEIGHT/3)
+	love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH/2 + 30, VIRTUAL_HEIGHT/3)
+
 	if gameState == 'start' then
 		love.graphics.setFont(smallFont)
 		love.graphics.printf('Welcome to Pong!', 0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf('Press Enter to begin!', 0, 20, VIRTUAL_WIDTH, 'center')
+
     elseif gameState == 'serve' then
     	love.graphics.setFont(smallFont)
         love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s serve!", 
             0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf('Press Enter to serve!', 0, 20, VIRTUAL_WIDTH, 'center')
+    
     elseif gameState == 'play' then
+    
     elseif gameState == 'done' then
         love.graphics.setFont(largeFont)
         love.graphics.printf('Player ' .. tostring(winningPlayer) .. ' wins!',
@@ -148,6 +161,8 @@ function love.update(dt)
 			else
 				ball.dy = math.random(10, 150)
 			end
+
+			sounds['paddle_hit']:play()
 		end
 
 		-- detect collision left paddle
@@ -160,12 +175,15 @@ function love.update(dt)
 			else
 				ball.dy = math.random(10, 150)
 			end
+
+			sounds['paddle_hit']:play()
 		end
 
 		-- increment player2 score
 		if ball.x < 0 then
 			player2Score = player2Score + 1
 			servingPlayer = 1
+			sounds['score']:play()
 
 			if player2Score == 10 then
 				winner = 2
@@ -180,6 +198,7 @@ function love.update(dt)
 		if ball.x > VIRTUAL_WIDTH then
 			player1Score = player1Score + 1
 			servingPlayer = 2
+			sounds['score']:play()
 			
 			if player1Score == 10 then
 				winner = 1
@@ -195,11 +214,13 @@ function love.update(dt)
 	if ball.y <= 0 then
 		ball.y = 0
 		ball.dy = -ball.dy
+		sounds['wall_hit']:play()
 	end
 
 	if ball.y >= VIRTUAL_HEIGHT -4 then
 		ball.y = VIRTUAL_HEIGHT -4
 		ball.dy = -ball.dy
+		sounds['wall_hit']:play()
 	end
 
 	-- player 1 movement
@@ -229,3 +250,6 @@ function love.update(dt)
     player2:update(dt)
 end
 --------------------------------------------------------------------------------
+function
+
+end
