@@ -20,6 +20,7 @@ function love.load()
 	love.window.setTitle('Pong')
 
 	smallFont = love.graphics.newFont('font.ttf', 8)
+	    largeFont = love.graphics.newFont('font.ttf', 16)
 	scoreFont = love.graphics.newFont('font.ttf', 32)
 	love.graphics.setFont(smallFont)
 
@@ -40,6 +41,8 @@ function love.load()
 
     ball = Ball(VIRTUAL_WIDTH/2 -2, VIRTUAL_HEIGHT/2 -2, 4, 4)
 
+    servingPlayer = 1
+
 	gameState = 'start'
 end
 --------------------------------------------------------------------------------
@@ -49,12 +52,24 @@ function love.draw()
 	love.graphics.clear(40, 45, 52, 255)
 
 	love.graphics.setFont(smallFont)
-	love.graphics.printf('Hello Pong!', 0, 20, VIRTUAL_WIDTH, 'center')
 
-	-- print scores
-	love.graphics.setFont(scoreFont) -- change default font
-	love.graphics.print(tostring(player1Score), VIRTUAL_WIDTH/2 - 50, VIRTUAL_HEIGHT/3)
-	love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH/2 + 30, VIRTUAL_HEIGHT/3)
+	if gameState == 'start' then
+		love.graphics.setFont(smallFont)
+		love.graphics.printf('Welcome to Pong!', 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press Enter to begin!', 0, 20, VIRTUAL_WIDTH, 'center')
+    elseif gameState == 'serve' then
+    	love.graphics.setFont(smallFont)
+        love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s serve!", 
+            0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press Enter to serve!', 0, 20, VIRTUAL_WIDTH, 'center')
+    elseif gameState == 'play' then
+    elseif gameState == 'done' then
+        love.graphics.setFont(largeFont)
+        love.graphics.printf('Player ' .. tostring(winningPlayer) .. ' wins!',
+            0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Press Enter to restart!', 0, 30, VIRTUAL_WIDTH, 'center')
+    end
 
 	-- left paddle
 	player1:render()
@@ -85,11 +100,27 @@ function love.keypressed(key)
 	elseif key == 'return' or key == 'enter' then
 
 		if gameState == 'start' then
+			gameState = 'serve'
+
+		elseif gameState == 'serve' then
 			gameState = 'play'
-		else
-			gameState = 'start'
+
+		elseif gameState == 'done' then
+			gameState = 'serve'
+
 			-- reset ball position
 			ball:reset()
+
+			-- reset scores
+			player1Score = 0
+			player2Score = 0
+
+			-- set serving player for next game
+			if winner == 1 then
+				servingPlayer = 2
+			else
+				servingPlayer = 1
+			end			
 		end
 	end
 end
@@ -135,16 +166,28 @@ function love.update(dt)
 		if ball.x < 0 then
 			player2Score = player2Score + 1
 			servingPlayer = 1
-			ball:reset()
-			gameState = 'serve'
+
+			if player2Score == 10 then
+				winner = 2
+				gameState = 'done'
+			else
+				ball:reset()
+				gameState = 'serve'
+			end
 		end
 
 		-- increment player1 score
 		if ball.x > VIRTUAL_WIDTH then
 			player1Score = player1Score + 1
 			servingPlayer = 2
-			ball:reset()
-			gameState = 'serve'
+			
+			if player1Score == 10 then
+				winner = 1
+				gameState = 'done'
+			else
+				ball:reset()
+				gameState = 'serve'
+			end
 		end
 	end
 
