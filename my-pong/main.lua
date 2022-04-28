@@ -96,7 +96,18 @@ end
 --------------------------------------------------------------------------------
 function love.update(dt)
 
-	if gameState == 'play' then
+	if gameState == 'serve' then
+
+		ball.dy = math.random(-50, 50)
+		if servingPlayer == 1 then
+			ball.dx = math.random(140, 200)
+		else
+			ball.dx = -math.random(140, 200)
+		end
+
+	elseif gameState == 'play' then
+
+		-- detect collision reight paddle
 		if ball:collides(player1) then
 			ball.dx = -ball.dx * 1.03 -- increase speed 3%
 			ball.x = player1.x + 5
@@ -108,6 +119,7 @@ function love.update(dt)
 			end
 		end
 
+		-- detect collision left paddle
 		if ball:collides(player2) then
 			ball.dx = -ball.dx * 1.03 -- increase speed 3%
 			ball.x = player2.x - 4
@@ -118,9 +130,25 @@ function love.update(dt)
 				ball.dy = math.random(10, 150)
 			end
 		end
+
+		-- increment player2 score
+		if ball.x < 0 then
+			player2Score = player2Score + 1
+			servingPlayer = 1
+			ball:reset()
+			gameState = 'serve'
+		end
+
+		-- increment player1 score
+		if ball.x > VIRTUAL_WIDTH then
+			player1Score = player1Score + 1
+			servingPlayer = 2
+			ball:reset()
+			gameState = 'serve'
+		end
 	end
 
-	-- upper and lowe screen boundary
+	-- upper and lower screen boundary
 	if ball.y <= 0 then
 		ball.y = 0
 		ball.dy = -ball.dy
