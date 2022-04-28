@@ -28,13 +28,13 @@ function love.load()
 
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
-        resizable = false,
+        resizable = true,
         vsync = true
     })
 
     sounds = {
-    	['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static')
-    	['score'] = love.audio.newSource('sounds/score.wav', 'static')
+    	['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
+    	['score'] = love.audio.newSource('sounds/score.wav', 'static'),
     	['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static')
     }
 
@@ -47,6 +47,7 @@ function love.load()
     ball = Ball(VIRTUAL_WIDTH/2 -2, VIRTUAL_HEIGHT/2 -2, 4, 4)
 
     servingPlayer = 1
+    winner = 0
 
 	gameState = 'start'
 end
@@ -78,7 +79,7 @@ function love.draw()
     
     elseif gameState == 'done' then
         love.graphics.setFont(largeFont)
-        love.graphics.printf('Player ' .. tostring(winningPlayer) .. ' wins!',
+        love.graphics.printf('Player ' .. tostring(winner) .. ' wins!',
             0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.setFont(smallFont)
         love.graphics.printf('Press Enter to restart!', 0, 30, VIRTUAL_WIDTH, 'center')
@@ -250,6 +251,6 @@ function love.update(dt)
     player2:update(dt)
 end
 --------------------------------------------------------------------------------
-function
-
+function love.resize(w, h)
+	push:resize(w, h)
 end
